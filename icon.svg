@@ -1,0 +1,23 @@
+<svg version="1.1" baseProfile="full" width="300" height="300" xmlns="http://www.w3.org/2000/svg">
+    <rect fill="#D1D5DB"  width="300" height="300"></rect>
+    <circle cx="150" cy="150" r="40" stroke="black" stroke-linecap="round" stroke-width="3" stroke-dasharray="251" stroke-dashoffset="205" transform="rotate(-2,150,150)" fill="none"/>
+    <circle cx="100" cy="160" r="70" stroke="black" stroke-linecap="round" stroke-width="3" stroke-dasharray="439" stroke-dashoffset="277" transform="rotate(-60,100,160)" fill="none"/>
+    <circle cx="175" cy="140" r="13" stroke="black" stroke-linecap="round" stroke-width="3" stroke-dasharray="81"  stroke-dashoffset="50"  transform="rotate(-140,175,140)" fill="none"/>
+    <circle cx="190" cy="120" r="60" stroke="black" stroke-linecap="round" stroke-width="3" stroke-dasharray="377" stroke-dashoffset="300" transform="rotate(127,190,120)" fill="none"/>
+    <circle cx="188" cy="220" r="80" stroke="black" stroke-linecap="round" stroke-width="3" stroke-dasharray="502" stroke-dashoffset="475" transform="rotate(-90,188,220)" fill="none"/>
+    <circle cx="150" cy="220" r="30" stroke="black" stroke-linecap="round" stroke-width="3" stroke-dasharray="188" stroke-dashoffset="147" transform="rotate(170,150,220)" fill="none"/>
+    <!--<circle cx="134" cy="102" r="1" stroke="red"/>
+    <circle cx="154" cy="166" r="1" stroke="red"/>
+    <circle cx="148" cy="138" r="1" stroke="red"/>
+    <circle cx="160" cy="163" r="1" stroke="red"/>-->
+    <path d="M134 102 Q124 142 154 166 Q143 151 145 135 Q146 152 155 163 Q169 128 134 102"  fill="#2C8E88"/>
+   <!-- <path d="M153 165 Q143 151 148 138" stroke="red" fill="none"/>
+    <path d="M148 138 Q146 152 160 163" stroke="red" fill="none"/>
+    <path d="M160 163 Q 167 130 134 105" stroke="red" fill="none"/>-->
+    <!--<circle cx="166" cy="133" r="1" stroke="red"/>
+    <circle cx="168" cy="137" r="1" stroke="red"/>-->
+    <!--<circle cx="187" cy="141" r="1" stroke="red"/>-->
+    <path d="M166 133 Q167 135 168 138 Q178 129 187 141 C 185 125, 172 126, 166 133" fill="#76AEF1"/>
+    <!--<path d="M168 137 Q178 129 187 141" stroke="red" fill="none"/>
+    <path d="M187 141 Q181 121 166 133" stroke="red" fill="none"/>-->
+</svg>
