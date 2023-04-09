@@ -1,35 +1,54 @@
-import React from 'react';
+import React,{useState} from 'react';
+import ReactDom from 'react-dom';
 import moment from "moment";
-import {useDispatch} from "react-redux";
+import {Provider, useDispatch} from "react-redux";
 import {deletePost,likePost} from "../../../actions/posts";
 import {Link} from "react-router-dom";
 import { PlusOutlined, HeartFilled, ArrowDownOutlined } from '@ant-design/icons';
-import {Avatar} from 'antd'
+import Auth from '../../Auth/Auth'
+// import Modal from '../Modal/Modal'
+import {Avatar,Modal} from 'antd'
 import './style.css'
+import App from "../../../App";
 
 const Post = ({post,setCurrentId}) => {
     const dispatch = useDispatch();
+    const [showLogin, setShowLogin] = useState(false)
     const user = JSON.parse(localStorage.getItem('profile'));
     console.log(post)
-    const Likes = () => {
-        if(post.likes.length > 0){
-            return post.likes.find((like) => like === (user?.result?._id))
-                ?(
-                    <>
-                        <i className="fa fa-thumbs-o-up fa-lg"></i>
-                        {post.likes.length > 2 ? `you and ${post.likes.length-1}other`:`${post.likes.length} like${post.likes.length>1?'s':''}`}
-                    </>
-                ):(
-                    <>
-                        <i className="fa fa-thumbs-o-up fa-lg"></i>
-                        {post.likes.length} {post.likes.length === 1 ? 'Like' : 'Likes'}
-                    </>
-                )
+    // const Likes = () => {
+    //     if(post.likes.length > 0){
+    //         return post.likes.find((like) => like === (user?.result?._id))
+    //             ?(
+    //                 <>
+    //                     <i className="fa fa-thumbs-o-up fa-lg"></i>
+    //                     {post.likes.length > 2 ? `you and ${post.likes.length-1}other`:`${post.likes.length} like${post.likes.length>1?'s':''}`}
+    //                 </>
+    //             ):(
+    //                 <>
+    //                     <i className="fa fa-thumbs-o-up fa-lg"></i>
+    //                     {post.likes.length} {post.likes.length === 1 ? 'Like' : 'Likes'}
+    //                 </>
+    //             )
+    //     }
+    //     return <><i className="fa fa-thumbs-o-up fa-lg"></i>Like</>
+    // }
+    const handleLike = async() =>{
+        const res = await dispatch(likePost(post._id));
+        console.log(res)
+        if(res.message === 'Unauthenticated'){
+            setShowLogin(true)
+            // ReactDom.render(
+            //     <Modal/>,
+            //     document.getElementById('App'));
         }
-        return <><i className="fa fa-thumbs-o-up fa-lg"></i>Like</>
+    }
+    const handleClose = () => {
+        setShowLogin(false)
     }
     return (
-        <div className="post">
+        <>
+            <div className="post">
             <img src={`${post.selectFile}`} />
             {/*<div className="absolute left-2 top-2 text-xl text-gray-900">*/}
             {/*    <h1>{moment(post.createdAt).format('MMMM Do YYYY, h:mm:ss a')}</h1>*/}
@@ -53,7 +72,7 @@ const Post = ({post,setCurrentId}) => {
             {/*    </div>*/}
             {/*</div>*/}
             <div className="likeAndColl">
-                <div className="icon" >
+                <div className="icon" onClick={handleLike}>
                     <HeartFilled/>
                 </div>
                 <div className="icon" >
@@ -72,6 +91,23 @@ const Post = ({post,setCurrentId}) => {
                 </div>
             </div>
         </div>
+            <Modal open={showLogin} onCancel={handleClose} footer={null} width={700} wrapClassName={"loginModal"}>
+                <div className="loginContent">
+                    {/*<div style={{backgroundImage:`${post.selectFile}`}}>*/}
+                    {/*</div>*/}
+                    {/*<img src={post.selectFile} style={{clipPath:'polygon(40% 0%, 60% 0%,60% 100%,40% 100%)'}}/>*/}
+                    <div style={{width:"100px",height:'600px'}}>
+                        <img src={post.selectFile} style={{width:"100px",height:'600px',objectFit:'cover'}}/>
+                    </div>
+                    <div>
+                        <Auth></Auth>
+                    </div>
+                </div>
+            </Modal>
+            {/*<div className="loginModal">*/}
+
+            {/*</div>*/}
+        </>
     );
 
 }

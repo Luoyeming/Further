@@ -35,7 +35,7 @@ const Auth = () => {
     }
 
     return (
-        <div className="container mx-auto mt-10 p-6 border-2 border-gray-400 rounded-xl space-y-4 w-96">
+        <div className="container mx-auto mt-10 p-6  space-y-4 w-96">
             <div className="flex flex-col justify-center items-center text-2xl text-gray-900">
                 <i className="fa fa-expeditedssl"></i>
                 {isSignup ? '注册' : '登录'}

@@ -97,3 +97,16 @@
 .creatorAndDownLoad .creator span:hover{
    color: #fff
 }
+
+
+.loginContent{
+   display: flex;
+   /*width: 600px;*/
+   /*height: 400px;*/
+}
+.loginModal .ant-modal-content{
+   width: 700px;
+   height: 600px;
+   padding: 0;
+}
+
