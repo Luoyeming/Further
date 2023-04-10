@@ -91,15 +91,15 @@ const Post = ({post,setCurrentId}) => {
                 </div>
             </div>
         </div>
-            <Modal open={showLogin} onCancel={handleClose} footer={null} width={700} wrapClassName={"loginModal"}>
+            <Modal open={showLogin} onCancel={handleClose} style={{top:'60px'}} footer={null} width={900} wrapClassName={"loginModal"}>
                 <div className="loginContent">
                     {/*<div style={{backgroundImage:`${post.selectFile}`}}>*/}
                     {/*</div>*/}
                     {/*<img src={post.selectFile} style={{clipPath:'polygon(40% 0%, 60% 0%,60% 100%,40% 100%)'}}/>*/}
-                    <div style={{width:"100px",height:'600px'}}>
-                        <img src={post.selectFile} style={{width:"100px",height:'600px',objectFit:'cover'}}/>
+                    <div style={{borderRadius:"10px 0 10px 0"}}>
+                        <img src={post.selectFile} style={{width:"280px",height:'630px',objectFit:'cover',borderRadius:"8px 0 0 8px4"}}/>
                     </div>
-                    <div>
+                    <div style={{width:'620px',display:'flex', justifyContent:'center', alignItems:'center'}}>
                         <Auth></Auth>
                     </div>
                 </div>

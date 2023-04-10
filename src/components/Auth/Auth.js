@@ -1,9 +1,10 @@
 import React, {useState} from 'react';
-import Input from "./Input";
+// import Input from "./Input";
 import {useDispatch} from "react-redux";
 import {useHistory} from "react-router-dom";
 import {signin, signup} from "../../actions/auth"
 import ReactFileReader from "react-file-reader";
+import {Form, Input} from 'antd'
 
 const initialState = {name:'',email:'',password:'',confirmPassword:''}
 const Auth = () => {
@@ -35,16 +36,18 @@ const Auth = () => {
     }
 
     return (
-        <div className="container mx-auto mt-10 p-6  space-y-4 w-96">
-            <div className="flex flex-col justify-center items-center text-2xl text-gray-900">
+        // <div className="container mx-auto mt-10 p-6  space-y-4 w-96">
+        <div style={{display:"flex",justifyContent:"center",alignItems:"center",flexDirection:"column"}}>
+            <div>
                 <i className="fa fa-expeditedssl"></i>
                 {isSignup ? '注册' : '登录'}
             </div>
-            <form className="space-y-6 justify-center items-center flex flex-col px-6 relative" onSubmit={handleSubmit}>
-                {isSignup && <Input name="name" label="name" handleChange={handleChange} autoFocus placeholder={"name"}/>}
-                <Input name="email" label="Email Address" handleChange={handleChange} type="email" placeholder={"Email Address"}/>
-                <Input name="password" label="Password" handleChange={handleChange} type={showPassword ? "text" : "password"} handleShowPassword={handleShowPassword} placeholder={"Password"}/>
-                {isSignup && <Input name="confirmPassword" label="Repeat Password" handleChange={handleChange} type="password" placeholder={"Repeat Password"}/>}
+            {/*<form className="space-y-6 justify-center items-center flex flex-col px-6 relative" onSubmit={handleSubmit}>*/}
+            <Form layout={"vertical"}>
+                {isSignup && <Form.Item label="用户名" name="name"><Input /></Form.Item>}
+                <Form.Item label="邮箱" name="email"><Input /></Form.Item>
+                <Form.Item label="密码" name="password"><Input.Password/></Form.Item>
+                {isSignup && <Form.Item label="再次输入密码" name="confirmPassword"><Input.Password/></Form.Item>}
                 {isSignup && <ReactFileReader fileTypes={[".png",".jpg",".gif", "jpeg"]} name="imageUrl" base64={true} multipleFiles={false} handleFiles={(files) => {
                     setFormData({...formData, imageUrl: files.base64});
                     setImagePreview(files.base64);
@@ -59,7 +62,7 @@ const Auth = () => {
                 </ReactFileReader>}
                 <button type="submit" className="custom-btn btn-13">{isSignup ? '注册' : '登录'}</button>
                 <button onClick={switchMode}>{isSignup ? '已经注册?登录' : '没有注册?注册'}</button>
-            </form>
+            </Form>
         </div>
     )
 };
