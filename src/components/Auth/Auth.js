@@ -4,21 +4,37 @@ import {useDispatch} from "react-redux";
 import {useHistory} from "react-router-dom";
 import {signin, signup} from "../../actions/auth"
 import ReactFileReader from "react-file-reader";
-import {Form, Input} from 'antd'
+import './style.css'
+import {Form, Input, Upload, message,Image} from 'antd'
+import {PlusOutlined} from '@ant-design/icons'
 
 const initialState = {name:'',email:'',password:'',confirmPassword:''}
+
 const Auth = () => {
     const [showPassword,setShowPassword] = useState(false);
     const [isSignup, setIsSignup] = useState(false);
     const [formData,setFormData] = useState(initialState);
     const [imagePreview,setImagePreview] = useState(null);
+    const [imageUrl, setImageUrl] = useState()
     const dispatch = useDispatch();
     const history = useHistory();
     const handleShowPassword = () => setShowPassword((prevShowPassword) => !prevShowPassword);
 
-    const handleChange = (e) => {
-        setFormData({...formData,[e.target.name]:e.target.value})
-    }
+    const [messageApi, contextHolder] = message.useMessage();
+    const handleChange = (info) => {
+        // if (info.file.status === 'uploading') {
+        //     setLoading(true);
+        //     return;
+        // }
+        console.log(info)
+
+
+        getBase64(info.file.originFileObj, (url) => {
+                // setLoading(false);
+            setImageUrl(url);
+        });
+
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -35,6 +51,34 @@ const Auth = () => {
         setShowPassword(false);
     }
 
+    const uploadButton = (
+        <div>
+            <PlusOutlined />
+            <div style={{ marginTop: 8 }}>上传</div>
+        </div>
+    );
+    const getBase64 = (img, callback) => {
+        const reader = new FileReader();
+        reader.addEventListener('load', () => callback(reader.result));
+        reader.readAsDataURL(img);
+    };
+    const beforeUpload = (file) => {
+        const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
+        if (!isJpgOrPng) {
+            messageApi.open({
+                type: 'error',
+                content: '只能上传JPG/PNG文件!',
+            });
+        }
+        const isLt2M = file.size / 1024 / 1024 < 2;
+        if (!isLt2M) {
+            messageApi.open({
+                type: 'error',
+                content: '图片大小必须小于2MB!',
+            });
+        }
+        return isJpgOrPng && isLt2M;
+    };
     return (
         // <div className="container mx-auto mt-10 p-6  space-y-4 w-96">
         <div style={{display:"flex",justifyContent:"center",alignItems:"center",flexDirection:"column"}}>
@@ -48,18 +92,21 @@ const Auth = () => {
                 <Form.Item label="邮箱" name="email"><Input /></Form.Item>
                 <Form.Item label="密码" name="password"><Input.Password/></Form.Item>
                 {isSignup && <Form.Item label="再次输入密码" name="confirmPassword"><Input.Password/></Form.Item>}
-                {isSignup && <ReactFileReader fileTypes={[".png",".jpg",".gif", "jpeg"]} name="imageUrl" base64={true} multipleFiles={false} handleFiles={(files) => {
-                    setFormData({...formData, imageUrl: files.base64});
-                    setImagePreview(files.base64);
-                } }>
-                   {/* <i className="fa fa-photo flex"></i>*/}
-                   <div>
-                       <span className="text-gray-400 cursor-pointer">设置头像</span>
-                        <div className={!imagePreview ? "flex rounded-full w-14 h-14 bg-cover hidden" : "flex rounded-full w-14 h-14 bg-cover"}>
-                            <img src={imagePreview} className="rounded-full"/>
-                        </div>
-                   </div>
-                </ReactFileReader>}
+                {isSignup && <div style={{display:"flex",alignItems:"center"}}>
+                    <span style={{width:'100px'}}>上传图片</span>
+                        <Upload
+                            // action={()=>{return  Promise.resolve()}}
+                            listType={"picture-circle"}
+                            className="avatar-uploader"
+                            showUploadList={false}
+                            beforeUpload={beforeUpload}
+                            onChange={handleChange}
+                            style={{width:'70px',height:'70px'}}
+                        >
+                            {imageUrl ? <img src={imageUrl} alt="avatar" style={{ width: '70px',height:'70px', borderRadius:'50%' }} /> : uploadButton}
+                        </Upload>
+                    </div>
+                }
                 <button type="submit" className="custom-btn btn-13">{isSignup ? '注册' : '登录'}</button>
                 <button onClick={switchMode}>{isSignup ? '已经注册?登录' : '没有注册?注册'}</button>
             </Form>
