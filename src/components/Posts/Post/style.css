@@ -35,6 +35,9 @@
    position: relative;
    cursor: zoom-in;
 }
+.post:hover{
+   background-color: black;
+}
 
 .post:hover .likeAndColl, .post:hover .creatorAndDownLoad{
    visibility: visible;

@@ -1,12 +1,14 @@
 import React, {useEffect, useState} from 'react';
 import {Link, useHistory, useLocation} from 'react-router-dom';
+import {useSelector} from "react-redux";
 import {useDispatch} from "react-redux";
 import decode from "jwt-decode";
 import './style.css';
 import SvgIcon from './SvgIcon'
 const Navbar = ({setSearchItem,setPostData,setCurrentId}) => {
     const [user,setUser] = useState(JSON.parse(localStorage.getItem('profile')));
-
+    const users = useSelector((state) => state.auth);
+    console.log(users)
     const dispatch = useDispatch();
 
     const history = useHistory();
@@ -35,7 +37,7 @@ const Navbar = ({setSearchItem,setPostData,setCurrentId}) => {
             if(decodedToken.exp * 1000 < new Date().getTime()) logout();
         }
         setUser(JSON.parse(localStorage.getItem('profile')));
-    },[location]);
+    },[location,users]);
 
     return (
         <div className={user ? "bg-gray-200 min-w-full mb-4 sticky top-0 z-50 grid grid-cols-4 h-24 shadow-lg" : "bg-gray-200 min-w-full mb-4 sticky top-0 z-50 grid grid-cols-3 h-24 shadow-lg"}>
@@ -60,10 +62,10 @@ const Navbar = ({setSearchItem,setPostData,setCurrentId}) => {
                         <div className="grid grid-cols-3 gap-x-4">
                             <div className="pl-32 flex justify-center items-center flex-col">
                                 <div className="flex rounded-full w-14 h-14 bg-cover">
-                                    <img src={user.result.imageUrl} className="rounded-full"/>
+                                    <img src={user?.result?.imageUrl} className="rounded-full"/>
                                 </div>
                                 <div>
-                                    <div>{user.result.name}</div>
+                                    <div>{user?.result?.name}</div>
                                 </div>
                             </div>
                             <Link to="/form"><button className="custom-btn btn-13 w-24 mt-4 ml-14">发布</button></Link>

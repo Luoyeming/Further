@@ -36,11 +36,8 @@ const Post = ({post,setCurrentId}) => {
     const handleLike = async() =>{
         const res = await dispatch(likePost(post._id));
         console.log(res)
-        if(res.message === 'Unauthenticated'){
+        if(!res || res.message === 'Unauthenticated'){
             setShowLogin(true)
-            // ReactDom.render(
-            //     <Modal/>,
-            //     document.getElementById('App'));
         }
     }
     const handleClose = () => {
@@ -91,7 +88,7 @@ const Post = ({post,setCurrentId}) => {
                 </div>
             </div>
         </div>
-            <Modal open={showLogin} onCancel={handleClose} style={{top:'60px'}} footer={null} width={900} wrapClassName={"loginModal"}>
+            <Modal open={showLogin} onCancel={handleClose} destroyOnClose={true} style={{top:'60px'}} footer={null} width={900} wrapClassName={"loginModal"}>
                 <div className="loginContent">
                     {/*<div style={{backgroundImage:`${post.selectFile}`}}>*/}
                     {/*</div>*/}
@@ -100,7 +97,7 @@ const Post = ({post,setCurrentId}) => {
                         <img src={post.selectFile} style={{width:"280px",height:'630px',objectFit:'cover',borderRadius:"8px 0 0 8px4"}}/>
                     </div>
                     <div style={{width:'620px',display:'flex', justifyContent:'center', alignItems:'center'}}>
-                        <Auth></Auth>
+                        <Auth handleClose={handleClose} creator={post?.name}/>
                     </div>
                 </div>
             </Modal>

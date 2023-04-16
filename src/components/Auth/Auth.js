@@ -1,32 +1,32 @@
 import React, {useState} from 'react';
 // import Input from "./Input";
 import {useDispatch} from "react-redux";
-import {useHistory} from "react-router-dom";
+import {useHistory, useLocation} from "react-router-dom";
 import {signin, signup} from "../../actions/auth"
 import ReactFileReader from "react-file-reader";
 import './style.css'
-import {Form, Input, Upload, message,Image} from 'antd'
-import {PlusOutlined} from '@ant-design/icons'
+import {Form, Input, Upload, message,Button,Image} from 'antd'
+import {PlusOutlined, LockOutlined} from '@ant-design/icons'
 
 const initialState = {name:'',email:'',password:'',confirmPassword:''}
 
-const Auth = () => {
+const Auth = ({handleClose,creator}) => {
     const [showPassword,setShowPassword] = useState(false);
     const [isSignup, setIsSignup] = useState(false);
     const [formData,setFormData] = useState(initialState);
     const [imagePreview,setImagePreview] = useState(null);
-    const [imageUrl, setImageUrl] = useState()
+    const [imageUrl, setImageUrl] = useState('')
     const dispatch = useDispatch();
     const history = useHistory();
-    const handleShowPassword = () => setShowPassword((prevShowPassword) => !prevShowPassword);
-
+    // const handleShowPassword = () => setShowPassword((prevShowPassword) => !prevShowPassword);
+    const location = useLocation();
+    const [form] = Form.useForm();
     const [messageApi, contextHolder] = message.useMessage();
     const handleChange = (info) => {
         // if (info.file.status === 'uploading') {
         //     setLoading(true);
         //     return;
         // }
-        console.log(info)
 
 
         getBase64(info.file.originFileObj, (url) => {
@@ -36,19 +36,60 @@ const Auth = () => {
 
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
+    const handleSubmit = async (e) => {
+        // e.preventDefault();
+        // console.log(e)
         if(isSignup){
-            setImagePreview(null);
-            dispatch(signup(formData,history));
+            const res = await dispatch(signup({...e, imageUrl},history))
+            // console.log(res)
+            if(res?.code !== 200){
+                messageApi.open({
+                    type:'error',
+                    content: res?.message,
+                })
+            }else{
+                messageApi.open({
+                    type:'success',
+                    content: '注册成功',
+                })
+                setTimeout(()=>{
+                    dispatch({type:'AUTH', res});
+                    if(location.pathname === '/')
+                        handleClose();
+                    else
+                        history.push('/')
+                },500)
+            }
+            // dispatch(signup({...e, imageUrl},history));
         }else{
-            dispatch(signin(formData,history))
+            // console.log(location)
+            const res = await dispatch(signin(e,history))
+            if(res?.code !== 200){
+                messageApi.open({
+                    type:'error',
+                    content: res?.message,
+                })
+            }else{
+                messageApi.open({
+                    type:'success',
+                    content: '登录成功',
+                })
+                setTimeout(()=>{
+                    dispatch({type:'AUTH', res});
+                    if(location.pathname === '/')
+                        handleClose();
+                    else
+                        history.push('/')
+                },500)
+            }
         }
+        // handleClose();
     }
 
     const switchMode = () => {
+        form.resetFields()
         setIsSignup((prevIsSignup) => !prevIsSignup);
-        setShowPassword(false);
+        // setShowPassword(false);
     }
 
     const uploadButton = (
@@ -81,18 +122,40 @@ const Auth = () => {
     };
     return (
         // <div className="container mx-auto mt-10 p-6  space-y-4 w-96">
+
         <div style={{display:"flex",justifyContent:"center",alignItems:"center",flexDirection:"column"}}>
-            <div>
-                <i className="fa fa-expeditedssl"></i>
+            {contextHolder}
+            <div style={{display:"flex",justifyContent:"center",alignItems:"center", fontSize:'32px'}}>
+                <LockOutlined />
                 {isSignup ? '注册' : '登录'}
             </div>
+            {creator?<div style={{margin:'7px 0px'}}>想点赞{creator}的图片？请{isSignup ? '注册' : '登录'}</div>:<></>}
             {/*<form className="space-y-6 justify-center items-center flex flex-col px-6 relative" onSubmit={handleSubmit}>*/}
-            <Form layout={"vertical"}>
-                {isSignup && <Form.Item label="用户名" name="name"><Input /></Form.Item>}
-                <Form.Item label="邮箱" name="email"><Input /></Form.Item>
-                <Form.Item label="密码" name="password"><Input.Password/></Form.Item>
-                {isSignup && <Form.Item label="再次输入密码" name="confirmPassword"><Input.Password/></Form.Item>}
-                {isSignup && <div style={{display:"flex",alignItems:"center"}}>
+            <Form layout={"vertical"}  onFinish={handleSubmit} form={form}>
+                {isSignup && <Form.Item label="用户名" name="name" rules={[{ required: true,message:'请输入用户名' }]}><Input /></Form.Item>}
+                <Form.Item label="邮箱" name="email" rules={[{ required: true,message:'请输入邮箱' }]}><Input /></Form.Item>
+                <Form.Item
+                    label="密码"
+                    name="password"
+                    rules={[{ required: true,message:'请输入密码' }]}
+                >
+                    <Input.Password/>
+                </Form.Item>
+                {isSignup && <Form.Item
+                    label="再次输入密码"
+                    name="confirmPassword"
+                    rules={[{ required: true,message:'请再次输入密码' },({ getFieldValue }) => ({
+                        validator(_, value) {
+                        if (!value || getFieldValue('password') === value) {
+                        return Promise.resolve();
+                    }
+                        return Promise.reject(new Error('密码不相同'));
+                    },
+                    }),]}
+                >
+                    <Input.Password/>
+                </Form.Item>}
+                {isSignup && <div style={{display:"flex",alignItems:"center" }}>
                     <span style={{width:'100px'}}>上传图片</span>
                         <Upload
                             // action={()=>{return  Promise.resolve()}}
@@ -101,14 +164,14 @@ const Auth = () => {
                             showUploadList={false}
                             beforeUpload={beforeUpload}
                             onChange={handleChange}
-                            style={{width:'70px',height:'70px'}}
+                            style={{width:'70px!important',height:'70px!important'}}
                         >
                             {imageUrl ? <img src={imageUrl} alt="avatar" style={{ width: '70px',height:'70px', borderRadius:'50%' }} /> : uploadButton}
                         </Upload>
                     </div>
                 }
-                <button type="submit" className="custom-btn btn-13">{isSignup ? '注册' : '登录'}</button>
-                <button onClick={switchMode}>{isSignup ? '已经注册?登录' : '没有注册?注册'}</button>
+                    <button  className="custom-btn btn-13" type={"submit"}>{isSignup ? '注册' : '登录'}</button>
+                <Button type="link" onClick={switchMode} style={{color:'black',border:'none',backgroundColor:'transparent'}}>{isSignup ? '已经注册?登录' : '没有注册?注册'}</Button>
             </Form>
         </div>
     )
