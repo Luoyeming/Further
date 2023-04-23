@@ -4,18 +4,22 @@ import moment from "moment";
 import {Provider, useDispatch} from "react-redux";
 import {deletePost,likePost} from "../../../actions/posts";
 import {Link} from "react-router-dom";
+import {useHistory, useLocation} from "react-router-dom";
 import { PlusOutlined, HeartFilled, ArrowDownOutlined } from '@ant-design/icons';
 import Auth from '../../Auth/Auth'
 // import Modal from '../Modal/Modal'
-import {Avatar,Modal} from 'antd'
+import {Avatar,Modal,message} from 'antd'
 import './style.css'
 import App from "../../../App";
 
 const Post = ({post,setCurrentId}) => {
     const dispatch = useDispatch();
+    const [postItem,setPostItem] = useState(post)
     const [showLogin, setShowLogin] = useState(false)
     const user = JSON.parse(localStorage.getItem('profile'));
-    console.log(post)
+    const [messageApi, contextHolder] = message.useMessage();
+    const history = useHistory();
+    console.log(postItem)
     // const Likes = () => {
     //     if(post.likes.length > 0){
     //         return post.likes.find((like) => like === (user?.result?._id))
@@ -34,19 +38,37 @@ const Post = ({post,setCurrentId}) => {
     //     return <><i className="fa fa-thumbs-o-up fa-lg"></i>Like</>
     // }
     const handleLike = async() =>{
-        const res = await dispatch(likePost(post._id));
-        console.log(res)
-        if(!res || res.message === 'Unauthenticated'){
-            setShowLogin(true)
+        if(postItem.likes.includes(user?.result?._id)){
+            messageApi.open({
+                type:'error',
+                content: '已点赞',
+            })
+            return
         }
+        const res = await dispatch(likePost(postItem?._id));
+        console.log(res)
+        if(res?.code !== 200){
+            setShowLogin(true)
+            return
+        }
+        messageApi.open({
+            type:'success',
+            content: '点赞成功',
+        })
+        setPostItem(res?.message)
     }
     const handleClose = () => {
         setShowLogin(false)
     }
+
+    const goToUserPage = () =>{
+
+    }
     return (
         <>
+            {contextHolder}
             <div className="post">
-            <img src={`${post.selectFile}`} />
+            <img src={`${postItem.waterImg}`} />
             {/*<div className="absolute left-2 top-2 text-xl text-gray-900">*/}
             {/*    <h1>{moment(post.createdAt).format('MMMM Do YYYY, h:mm:ss a')}</h1>*/}
             {/*    <h1>{post.name}</h1>*/}
@@ -68,22 +90,24 @@ const Post = ({post,setCurrentId}) => {
             {/*        )}*/}
             {/*    </div>*/}
             {/*</div>*/}
-            <div className="likeAndColl">
-                <div className="icon" onClick={handleLike}>
-                    <HeartFilled/>
-                </div>
-                <div className="icon" >
-                    <PlusOutlined/>
-                </div>
-            </div>
-            <div className="creatorAndDownLoad">
-                <div className="creator">
-                    <Avatar  src={`${post.creatorFile}`} />
-                    <span>{post?.name}</span>
-                </div>
-                <div className="downLoad">
+            <div className="maskImage">
+                <div className="likeAndColl">
+                    <div className="icon" onClick={handleLike}>
+                        <HeartFilled style={user && postItem  && postItem.likes.includes(user?.result?._id) ? {color:'#ff7875'}:{}}/>
+                    </div>
                     <div className="icon" >
-                        <ArrowDownOutlined />
+                        <PlusOutlined/>
+                    </div>
+                </div>
+                <div className="creatorAndDownLoad">
+                    <div className="creator" onClick={()=>{history.push(`/user/${postItem.creator}`)}}>
+                        <Avatar  src={`${postItem.creatorFile}`} />
+                        <span>{postItem?.name}</span>
+                    </div>
+                    <div className="downLoad">
+                        <div className="icon" >
+                            <ArrowDownOutlined />
+                        </div>
                     </div>
                 </div>
             </div>
@@ -94,10 +118,10 @@ const Post = ({post,setCurrentId}) => {
                     {/*</div>*/}
                     {/*<img src={post.selectFile} style={{clipPath:'polygon(40% 0%, 60% 0%,60% 100%,40% 100%)'}}/>*/}
                     <div style={{borderRadius:"10px 0 10px 0"}}>
-                        <img src={post.selectFile} style={{width:"280px",height:'630px',objectFit:'cover',borderRadius:"8px 0 0 8px4"}}/>
+                        <img src={postItem.waterImg} style={{width:"280px",height:'630px',objectFit:'cover',borderRadius:"8px 0 0 8px4"}}/>
                     </div>
                     <div style={{width:'620px',display:'flex', justifyContent:'center', alignItems:'center'}}>
-                        <Auth handleClose={handleClose} creator={post?.name}/>
+                        <Auth handleClose={handleClose} creator={postItem?.name}/>
                     </div>
                 </div>
             </Modal>

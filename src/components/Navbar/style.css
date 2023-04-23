@@ -167,3 +167,16 @@
     top: 2px;
 }
 
+.navContent{
+    height:110px;
+    width:100vw;
+    display:flex;
+    justify-content:space-between;
+    position:fixed;
+    top:0;
+    z-index:700;
+    background-color:white;
+    border-bottom:1px solid white;
+    box-shadow:0px 2px 5px #f5f5f5
+}
+

@@ -13,7 +13,7 @@ const Posts = ({setCurrentId,searchItem}) =>{
     // console.log(styles)
     return (
         <>
-        {posts?.length?<div className="mt-11 mx-28 justify-center items-center">
+        {posts?.length?<div style={{padding:'10px 80px', position:'relative', top:'110px', backgroundColor:'#fafafa'}}>
                     <Masonry columnsCount={3} gutter="20px" className="">
                         {!searchItem ? posts.map((post) =>
                             <Post post={post} key={post} setCurrentId={setCurrentId}/>) :

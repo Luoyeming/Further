@@ -1,0 +1,77 @@
+.userContent{
+    position:relative;
+    top:110px;
+    background-color:#fafafa;
+    height:calc(100vh - 110px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.userContent .ant-btn-default:hover{
+    color:#03c8a8;
+    border-color: #03c8a8;
+}
+.userContent .ant-tabs-nav-list{
+    margin-left: 30px;
+}
+.userContent .ant-tabs .ant-tabs-ink-bar{
+    background: #03c8a8;
+}
+.userContent .ant-tabs .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn{
+    color: #03c8a8;
+}
+.userContent .ant-tabs .ant-tabs-tab:hover{
+    color: #03c8a8;
+}
+
+.myPicture{
+    width: 200px;
+    height: 150px
+}
+
+.deleteContent{
+    position: absolute;
+    z-index: 800;
+    width: 200px;
+    height: 150px;
+    top: 0;
+    background-color: rgba(191,191,191,0.6);
+    visibility: hidden;
+}
+.deleteContent .likeIcon{
+    position: absolute;
+    top: 10px;
+    right:10px;
+    color:#262626;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.deleteContent .deleteIcon{
+    position: absolute;
+    bottom: 10px;
+    left:50%;
+    transform: translate(-50%,0);
+    color:white;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.myPicture:hover .deleteContent{
+    visibility: visible;
+}
+
+.cancelSubscribe{
+    /*width:90px;*/
+    /*height:22px;*/
+    padding:4px 15px;
+    border:1px solid #d9d9d9;
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.02);
+    font-size: 14px;
+    border-radius: 6px;
+}
+
+.cancelSubscribe:hover{
+    color:#f5222d;
+    border-color: #f5222d;
+}

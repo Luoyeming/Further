@@ -1,0 +1,125 @@
+
+
+.uploadImgContent{
+    width:400px;
+    height:280px;
+    border: 2px dashed #bfbfbf;
+    position: relative;
+    cursor: pointer;
+}
+.uploadImgContent:hover{
+    border: 2px dashed #03c8a8;
+}
+
+.uploadImgContent:hover .imageIcon{
+    font-size: 88px;
+}
+
+.uploadImgContent:hover .uploadButton{
+    width: 48px;
+    height:48px;
+    font-size: 40px;
+    top:30%;
+}
+
+.uploadImgContent:hover .previewImg{
+    visibility: visible;
+}
+
+.uploadImgContent .previewImg .del-preV-icon:hover{
+    color:white;
+}
+
+.uploadImgContent .previewImg{
+    position: absolute;
+    top:0;
+    left:0;
+    background-color: rgba(38,38,38,0.5);
+    width: 100%;
+    height: 100%;
+    visibility: hidden;
+}
+
+
+.uploadImgContent .previewImg .del-preV-icon{
+    color:#bfbfbf;
+    font-size:24px;
+}
+
+.uploadImgContent .imageIcon{
+    position: absolute;
+    top:50%;
+    left:50%;
+    transform: translate(-50%,-50%);
+    background-color: white;
+    color:#bfbfbf;
+    font-size: 80px;
+    z-index:888;
+    transition: 0.3s ease-in-out;
+}
+.uploadImgContent .uploadButton{
+    position: absolute;
+    top:32%;
+    left:55%;
+    background-color: #03c8a8;
+    width: 40px;
+    height:40px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color:white;
+    font-size: 32px;
+    z-index:999;
+    transition: 0.3s ease-in-out;
+}
+
+.previewModal .ant-modal-content{
+    width: 800px;
+    height: 530px;
+    padding: 0;
+}
+.ant-switch-checked{
+    background:#03c8a8!important;
+}
+.ant-switch-checked:hover{
+    background:#96e4df!important;
+}
+
+.tick{
+    stroke-dasharray:350;
+    stroke-dashoffset:350;
+    animation:tick .8s ease-in-out;
+    animation-fill-mode:forwards;
+    animation-delay:.7s
+
+}
+
+@keyframes tick{
+    from{
+        stroke-dashoffset:350;
+    }
+    to{
+        stroke-dashoffset:0;
+    }
+}
+
+.tickContent{
+    width:150px;
+    height:150px;
+    border-radius:50%;
+    border:1px solid #f0f0f0;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    box-shadow: 0 0 7px #f5f5f5;
+}
+.uploadSuccessFooter{
+    display:flex;
+    justify-content:space-between;
+    width:360px
+}
+.uploadSuccessFooter .ant-btn-default:hover{
+    color:#03c8a8;
+    border-color: #03c8a8;
+}
