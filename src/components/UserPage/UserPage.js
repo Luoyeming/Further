@@ -2,7 +2,7 @@ import React,{useState, useEffect} from 'react';
 import {useSelector} from "react-redux";
 // import ReactDom from 'react-dom';
 // import moment from "moment";
-// import {Provider, useDispatch} from "react-redux";
+import {useDispatch} from "react-redux";
 // import {deletePost,likePost} from "../../../actions/posts";
 import {Link,useParams, useLocation} from "react-router-dom";
 import { PlusCircleOutlined, HeartFilled,HeartOutlined,EditOutlined,
@@ -10,7 +10,7 @@ import { PlusCircleOutlined, HeartFilled,HeartOutlined,EditOutlined,
     MinusCircleOutlined} from '@ant-design/icons';
 // import Auth from '../../Auth/Auth'
 // // import Modal from '../Modal/Modal'
-import {fetchPostsById} from '../../api'
+import {fetchPostsById, followUser} from '../../api'
 import {Avatar,Modal,message,  Button, Tabs, Row, Col, Spin} from 'antd'
 import Navbar from "../Navbar/Navbar";
 import './UserPage.css'
@@ -26,6 +26,8 @@ const UserPage = () => {
     const [isSubscribe, setIsSubscribe] = useState(true);
     const [userImage, setUserImage] = useState('');
     const [userName, setUserName] = useState('');
+
+    const dispatch = useDispatch();
 
     const PostsList = () => {
         return <div>
@@ -133,7 +135,13 @@ const UserPage = () => {
         }
     },[loaction])
 
-
+    const handleFollow = async() =>{
+        const res = await followUser(user.result._id, id)
+        console.log(res)
+        if(res?.data?.code === 200){
+            dispatch({type:'AUTHUPDATE', res});
+        }
+    }
 
     return <div className="userContent">
         <div style={{display:'flex', alignItems:'center', marginTop:'30px'}}>
@@ -142,7 +150,7 @@ const UserPage = () => {
                 {userName}
             </div>
             {isMine?<Button className="nodeCenter"><EditOutlined/>修改名字</Button>:
-                !isSubscribe?<Button className="nodeCenter"><PlusCircleOutlined />关注</Button>:
+                !isSubscribe?<Button className="nodeCenter" onClick={handleFollow}><PlusCircleOutlined />关注</Button>:
                     <button className="nodeCenter cancelSubscribe"><MinusCircleOutlined style={{marginRight:'7px'}}/>取消关注</button>
             }
         </div>
