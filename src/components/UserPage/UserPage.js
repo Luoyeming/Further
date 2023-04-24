@@ -10,7 +10,7 @@ import { PlusCircleOutlined, HeartFilled,HeartOutlined,EditOutlined,
     MinusCircleOutlined} from '@ant-design/icons';
 // import Auth from '../../Auth/Auth'
 // // import Modal from '../Modal/Modal'
-import {fetchPostsById, followUser} from '../../api'
+import {fetchPostsById, follow, followUsers} from '../../api'
 import {Avatar,Modal,message,  Button, Tabs, Row, Col, Spin} from 'antd'
 import Navbar from "../Navbar/Navbar";
 import './UserPage.css'
@@ -26,6 +26,8 @@ const UserPage = () => {
     const [isSubscribe, setIsSubscribe] = useState(true);
     const [userImage, setUserImage] = useState('');
     const [userName, setUserName] = useState('');
+    const [followUser, setFollowUser] = useState([])
+    const [messageApi, contextHolder] = message.useMessage();
 
     const dispatch = useDispatch();
 
@@ -80,9 +82,16 @@ const UserPage = () => {
         </div>
     }
 
-    const followList = () =>{
+    const FollowList = () =>{
         return <div>
-            
+            {
+                followUser.map((item)=>{
+                    return <div style={{display:'flex',flexDirection:'column', alignItems:'center'}}>
+                        <Avatar src={item?.imageUrl}/>
+                        <div>{item?.name}</div>
+                    </div>
+                })
+            }
         </div>
     }
 
@@ -100,7 +109,7 @@ const UserPage = () => {
         {
             key: '3',
             label: <div className="nodeCenter"><HeartOutlined />关注</div>,
-            children: `Content of Tab Pane 3`,
+            children: <FollowList/>,
         },
         {
             key: '4',
@@ -118,6 +127,10 @@ const UserPage = () => {
             setIsMine(true);
             setUserName(user?.result.name)
             setUserImage(user?.result.imageUrl)
+            const followUsers = await followUsers({userId:user?.result?.follow})
+            if(followUsers?.code === 200){
+                setFollowUser(followUsers?.data)
+            }
         }else{
             resData.isMine = false;
             if(user.result.follow.includes(id)) {
@@ -133,17 +146,24 @@ const UserPage = () => {
             setUserName(res?.data?.data[0].name);
             setUserImage(res?.data?.data[0].creatorFile)
         }
+
     },[loaction])
 
     const handleFollow = async() =>{
-        const res = await followUser(user.result._id, id)
+        const res = await follow(user.result._id, {userId:id})
         console.log(res)
         if(res?.data?.code === 200){
             dispatch({type:'AUTHUPDATE', res});
+            messageApi.open({
+                type:'success',
+                content: res?.data?.message,
+            })
+            setIsSubscribe(!isSubscribe)
         }
     }
 
     return <div className="userContent">
+        {contextHolder}
         <div style={{display:'flex', alignItems:'center', marginTop:'30px'}}>
             <Avatar size={160} src={userImage}/>
             <div style={{margin:'0px 20px', fontSize:'32px', fontWeight:'bold'}}>
@@ -151,7 +171,7 @@ const UserPage = () => {
             </div>
             {isMine?<Button className="nodeCenter"><EditOutlined/>修改名字</Button>:
                 !isSubscribe?<Button className="nodeCenter" onClick={handleFollow}><PlusCircleOutlined />关注</Button>:
-                    <button className="nodeCenter cancelSubscribe"><MinusCircleOutlined style={{marginRight:'7px'}}/>取消关注</button>
+                    <button className="nodeCenter cancelSubscribe" onClick={handleFollow}><MinusCircleOutlined style={{marginRight:'7px'}}/>取消关注</button>
             }
         </div>
         <Tabs defaultActiveKey="1" items={items} style={{width:'100%',fontSize:'32px'}}/>

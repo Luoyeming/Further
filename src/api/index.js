@@ -23,4 +23,8 @@ export const signIn = (formData) => API.post('/user/signin', formData);
 
 export const signUp = (formData) => API.post('/user/signup', formData);
 
-export const fetchPostsById = (id,data) => API.post(`/posts/${id}`, data)
+export const fetchPostsById = (id,data) => API.post(`/posts/${id}`, data);
+
+export const follow = (id,data) => API.post(`user/follow/${id}`,data)
+
+export const followUsers = (data) => API.post('user/followUsers', data)
