@@ -3,6 +3,7 @@ import ReactDom from 'react-dom';
 import moment from "moment";
 import {Provider, useDispatch} from "react-redux";
 import {deletePost,likePost} from "../../../actions/posts";
+import {collectionPic, signin} from "../../../actions/auth";
 import {Link} from "react-router-dom";
 import {useHistory, useLocation} from "react-router-dom";
 import { PlusOutlined, HeartFilled, ArrowDownOutlined } from '@ant-design/icons';
@@ -16,6 +17,7 @@ const Post = ({post,setCurrentId}) => {
     const dispatch = useDispatch();
     const [postItem,setPostItem] = useState(post)
     const [showLogin, setShowLogin] = useState(false)
+    const [isCollection, setIsCollection] = useState(false)
     const user = JSON.parse(localStorage.getItem('profile'));
     const [messageApi, contextHolder] = message.useMessage();
     const history = useHistory();
@@ -45,6 +47,13 @@ const Post = ({post,setCurrentId}) => {
             })
             return
         }
+        if(postItem?.creator === user?.result?._id){
+            messageApi.open({
+                type:'warning',
+                content: '不能点赞自己的图片',
+            })
+            return
+        }
         const res = await dispatch(likePost(postItem?._id));
         console.log(res)
         if(res?.code !== 200){
@@ -61,8 +70,36 @@ const Post = ({post,setCurrentId}) => {
         setShowLogin(false)
     }
 
-    const goToUserPage = () =>{
-
+    const handleCollection = async() =>{
+        if(user?.result?._id === postItem.creator){
+            messageApi.open({
+                type:'warning',
+                content: '不能收藏自己的图片',
+            })
+            return
+        }
+        if(user?.result?.myCollection.includes(postItem._id)){
+            messageApi.open({
+                type:'warning',
+                content: '已收藏',
+            })
+            return
+        }
+        const res = await dispatch(collectionPic(user?.result?._id, postItem._id))
+        console.log(res)
+        if(res?.code === 200){
+            messageApi.open({
+                type:'success',
+                content: '收藏成功',
+            })
+            setIsCollection(true)
+        }else{
+            messageApi.open({
+                type:'error',
+                content: '收藏失败',
+            })
+            setIsCollection(false)
+        }
     }
     return (
         <>
@@ -95,8 +132,8 @@ const Post = ({post,setCurrentId}) => {
                     <div className="icon" onClick={handleLike}>
                         <HeartFilled className='likeButton' style={user && postItem  && postItem.likes.includes(user?.result?._id) ? {color:'#ff7875'}:{}}/>
                     </div>
-                    <div className="icon" >
-                        <PlusOutlined className='collectionButton'/>
+                    <div className="icon" onClick={handleCollection}>
+                        <PlusOutlined className='collectionButton' style={isCollection || (user && postItem  && user?.result?.myCollection.includes(postItem?._id)) ? {color:'#ffec3d'}:{}}/>
                     </div>
                 </div>
                 <div className="creatorAndDownLoad">
@@ -106,7 +143,7 @@ const Post = ({post,setCurrentId}) => {
                     </div>
                     <div className="downLoad">
                         <div className="icon" >
-                            <ArrowDownOutlined />
+                            <ArrowDownOutlined className='downloadButton'/>
                         </div>
                     </div>
                 </div>

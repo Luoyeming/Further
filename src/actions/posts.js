@@ -55,3 +55,5 @@ export const likePost = (id) => async (dispatch) => {
     dispatch({type:'UPDATE', payload: data })
     return data
 }
+
+

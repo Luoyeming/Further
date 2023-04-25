@@ -89,8 +89,16 @@
    color:#141414
 }
 
+.likeAndColl .icon:hover .likeButton{
+   color:#ff7875
+}
+
 .likeAndColl .icon:hover .collectionButton{
    color:#ffec3d
+}
+
+.creatorAndDownLoad .downLoad .icon:hover .downloadButton{
+   color:#03c8a8;
 }
 
 .creatorAndDownLoad{

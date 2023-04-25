@@ -10,7 +10,9 @@ import { PlusCircleOutlined, HeartFilled,HeartOutlined,EditOutlined,
     MinusCircleOutlined} from '@ant-design/icons';
 // import Auth from '../../Auth/Auth'
 // // import Modal from '../Modal/Modal'
-import {fetchPostsById, follow, followUsers} from '../../api'
+import {follow,collectionPic} from "../../actions/auth";
+import {fetchPostsById, followUsers,fetchMyCollection} from '../../api'
+
 import {Avatar,Modal,message,  Button, Tabs, Row, Col, Spin} from 'antd'
 import './UserPage.css'
 import Post from "../Posts/Post/Post";
@@ -28,11 +30,12 @@ const UserPage = () => {
     const [followUser, setFollowUser] = useState([])
     const [messageApi, contextHolder] = message.useMessage();
     const [isLoading, setIsLoading] = useState(false)
+    const [myCollection, setMyCollection] = useState([])
     const dispatch = useDispatch();
     const history = useHistory();
     const PostsList = () => {
         return <div>
-            {isLoading?<div style={{margin: '10px 70px'}}>
+            {!isLoading?<div style={{margin: '10px 70px'}}>
                     <Row gutter={[24, 12]}>
                         {post.map((item) => {
                                 return <Col span={4} key={item._id}>
@@ -78,6 +81,41 @@ const UserPage = () => {
     const goToUserPage = (id) =>{
         history.push(`/user/${id}`)
     }
+    const deleteCollection = async(id) => {
+        const res = await dispatch(collectionPic(user?.result?._id, id));
+        if(res?.code === 200){
+            messageApi.open({
+                type:'success',
+                content: res?.message,
+            })
+            setMyCollection(myCollection.filter((item)=>item._id !== id))
+        }
+
+    }
+    const MyCollection = () => {
+        return <div>
+            {
+                !isLoading?<div style={{margin: '10px 70px'}}>
+                    <Row gutter={[24, 12]}>
+                        {myCollection.map((item) => {
+                                return <Col span={4} key={item._id}>
+                                        <div className="myPicture">
+                                            <img src={item.selectFile} style={{width: '200px', height: '150px'}}/>
+                                            <div className="deleteContent">
+                                                {/*<div className="likeIcon nodeCenter">*/}
+                                                {/*    {item.likes.length}<HeartFilled style={{marginLeft:'10px',color:'#ff7875'}}/>*/}
+                                                {/*</div>*/}
+                                                <DeleteOutlined className="deleteIcon" onClick={()=> {deleteCollection(item._id)}}/>
+                                            </div>
+                                        </div>
+                                </Col>
+                            }
+                        )}
+                    </Row>
+                </div>:<Spin size="large"/>
+            }
+        </div>
+    }
 
     const FollowList = () =>{
         return <div style={{margin: '10px 70px'}}>
@@ -105,7 +143,7 @@ const UserPage = () => {
         {
             key: '2',
             label: <div className="nodeCenter"><DatabaseOutlined />收藏</div>,
-            children: `Content of Tab Pane 2`,
+            children: <MyCollection/>,
         },
         {
             key: '3',
@@ -134,6 +172,10 @@ const UserPage = () => {
             if(users?.data?.code === 200){
                 setFollowUser(users?.data?.data)
             }
+            const myCollection = await fetchMyCollection({id:user?.result?.myCollection})
+            if(myCollection?.data?.code === 200){
+                setMyCollection(myCollection?.data?.data)
+            }
         }else{
             resData.isMine = false;
             if(user.result.follow.includes(id)) {
@@ -156,11 +198,10 @@ const UserPage = () => {
     const handleFollow = async() =>{
         const res = await follow(user.result._id, {userId:id})
         console.log(res)
-        if(res?.data?.code === 200){
-            dispatch({type:'AUTHUPDATE', res});
+        if(res?.code === 200){
             messageApi.open({
                 type:'success',
-                content: res?.data?.message,
+                content: res?.message,
             })
             setIsSubscribe(!isSubscribe)
         }
@@ -178,7 +219,7 @@ const UserPage = () => {
                     <button className="nodeCenter cancelSubscribe" onClick={handleFollow}><MinusCircleOutlined style={{marginRight:'7px'}}/>取消关注</button>
             }
         </div>
-        {isMine?<Tabs defaultActiveKey="1" items={items} style={{width:'100%',fontSize:'32px'}}/>:isLoading?<div style={{width:'calc(100% - 160px)',margin:'30px 80px'}}>
+        {isMine?<Tabs defaultActiveKey="1" items={items} style={{width:'100%',fontSize:'32px'}}/>:!isLoading?<div style={{width:'calc(100% - 160px)',margin:'30px 80px'}}>
             <Masonry columnsCount={3} gutter="20px" className="">
                 {post.map((item) =>
                         <Post post={item} key={item} />

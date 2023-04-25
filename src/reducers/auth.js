@@ -9,9 +9,9 @@ const authReducer = (state = {authData:null}, action) => {
             return {...state, authData: null};
         case 'AUTHUPDATE':
             let local = localStorage.getItem('profile');
-            console.log(action?.res?.data)
-            localStorage.setItem('profile',JSON.stringify({...JSON.parse(local), result:action?.res?.data?.data}));
-            return {...state, authData:action?.data}
+            console.log(action.data)
+            localStorage.setItem('profile',JSON.stringify({...JSON.parse(local), result:action.data.data}));
+            return {...state, authData:action.data.data}
         default:
             return state;
     }
