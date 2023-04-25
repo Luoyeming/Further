@@ -12,7 +12,7 @@ const Navbar = ({setSearchItem,setPostData,setCurrentId}) => {
     const [uploadSuccess, setUploadSuccess] = useState(false)
 
     const users = useSelector((state) => state?.auth?.authData?.result);
-    console.log(users)
+
     const dispatch = useDispatch();
 
     const history = useHistory();
@@ -76,7 +76,7 @@ const Navbar = ({setSearchItem,setPostData,setCurrentId}) => {
                 {user ?(
                     <div className="pt-3 col-span-2">
                         <div className="grid grid-cols-3 gap-x-4">
-                            <Link className="pl-32 flex justify-center items-center flex-col" to={`/user/${user.result._id}`}>
+                            <Link className="pl-32 flex justify-center items-center flex-col" to={`/user/${user?.result?._id}`}>
                                 <div className="flex rounded-full w-14 h-14 bg-cover">
                                     <img src={user?.result?.imageUrl} className="rounded-full"/>
                                 </div>

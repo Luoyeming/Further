@@ -4,7 +4,7 @@ import {useSelector} from "react-redux";
 // import moment from "moment";
 import {useDispatch} from "react-redux";
 // import {deletePost,likePost} from "../../../actions/posts";
-import {Link,useParams, useLocation} from "react-router-dom";
+import {Link,useParams, useLocation, useHistory} from "react-router-dom";
 import { PlusCircleOutlined, HeartFilled,HeartOutlined,EditOutlined,
     PictureOutlined, DatabaseOutlined, LineChartOutlined, DeleteOutlined,
     MinusCircleOutlined} from '@ant-design/icons';
@@ -12,7 +12,6 @@ import { PlusCircleOutlined, HeartFilled,HeartOutlined,EditOutlined,
 // // import Modal from '../Modal/Modal'
 import {fetchPostsById, follow, followUsers} from '../../api'
 import {Avatar,Modal,message,  Button, Tabs, Row, Col, Spin} from 'antd'
-import Navbar from "../Navbar/Navbar";
 import './UserPage.css'
 import Post from "../Posts/Post/Post";
 import Masonry from "react-responsive-masonry";
@@ -28,15 +27,15 @@ const UserPage = () => {
     const [userName, setUserName] = useState('');
     const [followUser, setFollowUser] = useState([])
     const [messageApi, contextHolder] = message.useMessage();
-
+    const [isLoading, setIsLoading] = useState(false)
     const dispatch = useDispatch();
-
+    const history = useHistory();
     const PostsList = () => {
         return <div>
-            {post.length? isMine? <div style={{margin: '10px 70px'}}>
+            {isLoading?<div style={{margin: '10px 70px'}}>
                     <Row gutter={[24, 12]}>
                         {post.map((item) => {
-                                return <Col span={4}>
+                                return <Col span={4} key={item._id}>
                                     {item.isPermit ?
                                         <div className="myPicture">
                                             <img src={item.selectFile} style={{width: '200px', height: '150px'}}/>
@@ -72,26 +71,28 @@ const UserPage = () => {
                             }
                         )}
                     </Row>
-                </div> : <div style={{margin:'0px 80px'}}><Masonry columnsCount={3} gutter="20px" className="">
-                {post.map((item) =>
-                        <Post post={item} key={item} />
+                </div>:<Spin size="large"/>}
+                </div>
+    }
 
-                    )}
-            </Masonry></div>:<Spin size="large"/>
-            }
-        </div>
+    const goToUserPage = (id) =>{
+        history.push(`/user/${id}`)
     }
 
     const FollowList = () =>{
-        return <div>
+        return <div style={{margin: '10px 70px'}}>
+            <Row gutter={[24,24]}>
             {
                 followUser.map((item)=>{
-                    return <div style={{display:'flex',flexDirection:'column', alignItems:'center'}}>
-                        <Avatar src={item?.imageUrl}/>
-                        <div>{item?.name}</div>
-                    </div>
+                    return <Col span={3} key={item._id}>
+                            <div style={{display:'flex',flexDirection:'column', alignItems:'center', cursor:'pointer'}} onClick={()=>{goToUserPage(item._id)}}>
+                                <Avatar src={item?.imageUrl} size={64}/>
+                                <div>{item?.name}</div>
+                            </div>
+                    </Col>
                 })
             }
+            </Row>
         </div>
     }
 
@@ -121,15 +122,17 @@ const UserPage = () => {
     const loaction = useLocation()
     console.log(loaction)
     useEffect(async ()=>{
+        setIsLoading(true)
         const resData = {isMine:false}
         if(user && id === user.result._id){
             resData.isMine = true;
             setIsMine(true);
             setUserName(user?.result.name)
             setUserImage(user?.result.imageUrl)
-            const followUsers = await followUsers({userId:user?.result?.follow})
-            if(followUsers?.code === 200){
-                setFollowUser(followUsers?.data)
+            const users = await followUsers({userId:user?.result?.follow})
+
+            if(users?.data?.code === 200){
+                setFollowUser(users?.data?.data)
             }
         }else{
             resData.isMine = false;
@@ -141,12 +144,13 @@ const UserPage = () => {
             setIsMine(false)
         }
         const res = await fetchPostsById(id,resData)
+        console.log(res)
         if(res?.data?.code === 200){
             setPost(res?.data?.data)
-            setUserName(res?.data?.data[0].name);
-            setUserImage(res?.data?.data[0].creatorFile)
+            setUserName(res?.data?.data[0]?.name);
+            setUserImage(res?.data?.data[0]?.creatorFile)
         }
-
+        setIsLoading(false)
     },[loaction])
 
     const handleFollow = async() =>{
@@ -174,7 +178,17 @@ const UserPage = () => {
                     <button className="nodeCenter cancelSubscribe" onClick={handleFollow}><MinusCircleOutlined style={{marginRight:'7px'}}/>取消关注</button>
             }
         </div>
-        <Tabs defaultActiveKey="1" items={items} style={{width:'100%',fontSize:'32px'}}/>
+        {isMine?<Tabs defaultActiveKey="1" items={items} style={{width:'100%',fontSize:'32px'}}/>:isLoading?<div style={{width:'calc(100% - 160px)',margin:'30px 80px'}}>
+            <Masonry columnsCount={3} gutter="20px" className="">
+                {post.map((item) =>
+                        <Post post={item} key={item} />
+
+                    )}
+            </Masonry>
+            </div>:<Spin size='large'/>
+        }
     </div>
+            
+    
 }
 export default UserPage

@@ -89,6 +89,10 @@
    color:#141414
 }
 
+.likeAndColl .icon:hover .collectionButton{
+   color:#ffec3d
+}
+
 .creatorAndDownLoad{
    display: none;
    position: absolute;

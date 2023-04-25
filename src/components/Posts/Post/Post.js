@@ -93,10 +93,10 @@ const Post = ({post,setCurrentId}) => {
             <div className="maskImage">
                 <div className="likeAndColl">
                     <div className="icon" onClick={handleLike}>
-                        <HeartFilled style={user && postItem  && postItem.likes.includes(user?.result?._id) ? {color:'#ff7875'}:{}}/>
+                        <HeartFilled className='likeButton' style={user && postItem  && postItem.likes.includes(user?.result?._id) ? {color:'#ff7875'}:{}}/>
                     </div>
                     <div className="icon" >
-                        <PlusOutlined/>
+                        <PlusOutlined className='collectionButton'/>
                     </div>
                 </div>
                 <div className="creatorAndDownLoad">
