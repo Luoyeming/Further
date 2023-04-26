@@ -7,6 +7,8 @@ import {collectionPic, signin} from "../../../actions/auth";
 import {Link} from "react-router-dom";
 import {useHistory, useLocation} from "react-router-dom";
 import { PlusOutlined, HeartFilled, ArrowDownOutlined } from '@ant-design/icons';
+import {fetchPostByPostId, downloadCount, likeCount} from '../../../api'
+
 import Auth from '../../Auth/Auth'
 // import Modal from '../Modal/Modal'
 import {Avatar,Modal,message} from 'antd'
@@ -64,6 +66,7 @@ const Post = ({post,setCurrentId}) => {
             type:'success',
             content: '点赞成功',
         })
+        likeCount(postItem?.creator)
         setPostItem(res?.message)
     }
     const handleClose = () => {
@@ -99,6 +102,16 @@ const Post = ({post,setCurrentId}) => {
                 content: '收藏失败',
             })
             setIsCollection(false)
+        }
+    }
+    const downLoadFile = async() => {
+        const res = await fetchPostByPostId(postItem?._id);
+        downloadCount(postItem?.creator)
+        if(res?.data?.code === 200){
+            let a = document.createElement('a')
+            a.href = res?.data?.data?.selectFile
+            a.download = 'picture'
+            a.dispatchEvent(new MouseEvent('click'))
         }
     }
     return (
@@ -142,7 +155,7 @@ const Post = ({post,setCurrentId}) => {
                         <span>{postItem?.name}</span>
                     </div>
                     <div className="downLoad">
-                        <div className="icon" >
+                        <div className="icon" onClick={downLoadFile}>
                             <ArrowDownOutlined className='downloadButton'/>
                         </div>
                     </div>

@@ -32,3 +32,9 @@ export const follow = (id,data) => API.post(`/user/follow/${id}`,data)
 export const followUsers = (data) => API.post('/user/followUsers', data)
 
 export const collectionPic = (id,data) => API.post(`/user/collection/${id}`,data)
+
+export const fetchPostByPostId = (id) => API.post(`/posts/${id}/downloadPost`);
+
+export const downloadCount = (id) => API.post(`/user/${id}/downloadCount`);
+
+export const likeCount = (id) => API.post(`/user/${id}/likeCount`);

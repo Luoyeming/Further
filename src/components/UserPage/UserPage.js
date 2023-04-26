@@ -7,13 +7,13 @@ import {useDispatch} from "react-redux";
 import {Link,useParams, useLocation, useHistory} from "react-router-dom";
 import { PlusCircleOutlined, HeartFilled,HeartOutlined,EditOutlined,
     PictureOutlined, DatabaseOutlined, LineChartOutlined, DeleteOutlined,
-    MinusCircleOutlined} from '@ant-design/icons';
+    MinusCircleOutlined,ArrowDownOutlined} from '@ant-design/icons';
 // import Auth from '../../Auth/Auth'
 // // import Modal from '../Modal/Modal'
 import {follow,collectionPic} from "../../actions/auth";
-import {fetchPostsById, followUsers,fetchMyCollection} from '../../api'
+import {fetchPostsById, followUsers, fetchMyCollection, deletePost, fetchPostByPostId, downloadCount} from '../../api'
 
-import {Avatar,Modal,message,  Button, Tabs, Row, Col, Spin} from 'antd'
+import {Avatar,Modal,message,  Button, Tabs, Row, Col, Spin, Popconfirm} from 'antd'
 import './UserPage.css'
 import Post from "../Posts/Post/Post";
 import Masonry from "react-responsive-masonry";
@@ -33,6 +33,38 @@ const UserPage = () => {
     const [myCollection, setMyCollection] = useState([])
     const dispatch = useDispatch();
     const history = useHistory();
+
+    const deleteMyPost = async(id) => {
+        const res = await deletePost(id)
+        console.log(res)
+        if(res?.data?.code === 200){
+            messageApi.open({
+                type:'success',
+                content: res?.data?.message,
+            })
+            setPost(post.filter((item)=>item._id !== id))
+        }else{
+            messageApi.open({
+                type:'error',
+                content: res?.data?.message,
+            })
+        }
+    };
+    const cancel = (e) => {
+
+    };
+
+    const downLoadFile = async(postId, userId) => {
+        const res = await fetchPostByPostId(postId);
+        downloadCount(userId)
+        if(res?.data?.code === 200){
+            let a = document.createElement('a')
+            a.href = res?.data?.data?.selectFile
+            a.download = 'picture'
+            a.dispatchEvent(new MouseEvent('click'))
+        }
+    }
+
     const PostsList = () => {
         return <div>
             {!isLoading?<div style={{margin: '10px 70px'}}>
@@ -46,7 +78,17 @@ const UserPage = () => {
                                                 <div className="likeIcon nodeCenter">
                                                     {item.likes.length}<HeartFilled style={{marginLeft:'10px',color:'#ff7875'}}/>
                                                 </div>
-                                                <DeleteOutlined className="deleteIcon"/>
+                                                <Popconfirm
+                                                    title="确定删除这张照片吗？"
+                                                    description=""
+                                                    onConfirm={()=>{deleteMyPost(item._id)}}
+                                                    onCancel={cancel}
+                                                    okText="确定"
+                                                    cancelText="取消"
+                                                >
+                                                    <DeleteOutlined className="deleteIcon"/>
+                                                </Popconfirm>
+                                                <ArrowDownOutlined className="downLoadIcon" onClick={()=>{downLoadFile(item._id,item.creator)}}/>
                                             </div>
                                         </div> :
                                         <div style={{width: '200px', height: '150px'}}>
@@ -81,6 +123,7 @@ const UserPage = () => {
     const goToUserPage = (id) =>{
         history.push(`/user/${id}`)
     }
+
     const deleteCollection = async(id) => {
         const res = await dispatch(collectionPic(user?.result?._id, id));
         if(res?.code === 200){
@@ -105,7 +148,17 @@ const UserPage = () => {
                                                 {/*<div className="likeIcon nodeCenter">*/}
                                                 {/*    {item.likes.length}<HeartFilled style={{marginLeft:'10px',color:'#ff7875'}}/>*/}
                                                 {/*</div>*/}
-                                                <DeleteOutlined className="deleteIcon" onClick={()=> {deleteCollection(item._id)}}/>
+                                                <Popconfirm
+                                                    title="确定取消收藏吗？"
+                                                    description=""
+                                                    onConfirm={()=> {deleteCollection(item._id)}}
+                                                    onCancel={cancel}
+                                                    okText="确定"
+                                                    cancelText="取消"
+                                                >
+                                                    <DeleteOutlined className="deleteIcon"/>
+                                                </Popconfirm>
+                                                <ArrowDownOutlined className="downLoadIcon" onClick={()=>{downLoadFile(item._id,item.creator)}}/>
                                             </div>
                                         </div>
                                 </Col>
@@ -132,6 +185,10 @@ const UserPage = () => {
             }
             </Row>
         </div>
+    }
+
+    const UserData = () => {
+        
     }
 
     const items = [

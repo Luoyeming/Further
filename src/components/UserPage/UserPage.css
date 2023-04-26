@@ -50,13 +50,28 @@
 .deleteContent .deleteIcon{
     position: absolute;
     bottom: 10px;
-    left:50%;
-    transform: translate(-50%,0);
+    left:20%;
     color:white;
     cursor: pointer;
     font-size: 16px;
 }
 
+.deleteContent .deleteIcon:hover{
+    color:#f5222d
+}
+
+.deleteContent .downLoadIcon{
+    position: absolute;
+    bottom: 10px;
+    right:20%;
+    color:white;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.deleteContent .downLoadIcon:hover{
+    color:#03c8a8;
+}
 .myPicture:hover .deleteContent{
     visibility: visible;
 }
