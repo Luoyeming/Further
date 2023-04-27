@@ -10,7 +10,7 @@ import {PlusOutlined, LockOutlined} from '@ant-design/icons'
 
 const initialState = {name:'',email:'',password:'',confirmPassword:''}
 
-const Auth = ({handleClose,creator}) => {
+const Auth = ({handleClose,creator,modalState}) => {
     const [showPassword,setShowPassword] = useState(false);
     const [isSignup, setIsSignup] = useState(false);
     const [formData,setFormData] = useState(initialState);
@@ -129,7 +129,7 @@ const Auth = ({handleClose,creator}) => {
                 <LockOutlined />
                 {isSignup ? '注册' : '登录'}
             </div>
-            {creator?<div style={{margin:'7px 0px'}}>想点赞{creator}的图片？请{isSignup ? '注册' : '登录'}</div>:<></>}
+            {creator?<div style={{margin:'7px 0px'}}>想{modalState}{creator}的图片？请{isSignup ? '注册' : '登录'}</div>:<></>}
             {/*<form className="space-y-6 justify-center items-center flex flex-col px-6 relative" onSubmit={handleSubmit}>*/}
             <Form layout={"vertical"}  onFinish={handleSubmit} form={form}>
                 {isSignup && <Form.Item label="用户名" name="name" rules={[{ required: true,message:'请输入用户名' }]}><Input /></Form.Item>}

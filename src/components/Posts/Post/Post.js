@@ -13,7 +13,7 @@ import Auth from '../../Auth/Auth'
 // import Modal from '../Modal/Modal'
 import {Avatar,Modal,message} from 'antd'
 import './style.css'
-import App from "../../../App";
+
 
 const Post = ({post,setCurrentId}) => {
     const dispatch = useDispatch();
@@ -22,6 +22,7 @@ const Post = ({post,setCurrentId}) => {
     const [isCollection, setIsCollection] = useState(false)
     const user = JSON.parse(localStorage.getItem('profile'));
     const [messageApi, contextHolder] = message.useMessage();
+    const [modalState, setModalState] = useState('')
     const history = useHistory();
     console.log(postItem)
     // const Likes = () => {
@@ -57,8 +58,8 @@ const Post = ({post,setCurrentId}) => {
             return
         }
         const res = await dispatch(likePost(postItem?._id));
-        console.log(res)
-        if(res?.code !== 200){
+        if(res?.code === 403){
+            setModalState('点赞')
             setShowLogin(true)
             return
         }
@@ -66,7 +67,8 @@ const Post = ({post,setCurrentId}) => {
             type:'success',
             content: '点赞成功',
         })
-        likeCount(postItem?.creator)
+        const {data} = await likeCount(postItem?.creator)
+        dispatch({type:'AUTHUPDATE', data});
         setPostItem(res?.message)
     }
     const handleClose = () => {
@@ -96,7 +98,13 @@ const Post = ({post,setCurrentId}) => {
                 content: '收藏成功',
             })
             setIsCollection(true)
-        }else{
+        }
+        if(res?.code === 403){
+            setModalState('收藏')
+            setShowLogin(true)
+            return
+        }
+        else{
             messageApi.open({
                 type:'error',
                 content: '收藏失败',
@@ -106,12 +114,17 @@ const Post = ({post,setCurrentId}) => {
     }
     const downLoadFile = async() => {
         const res = await fetchPostByPostId(postItem?._id);
-        downloadCount(postItem?.creator)
+        const {data} = await downloadCount(postItem?.creator)
+        dispatch({type:'AUTHUPDATE', data});
         if(res?.data?.code === 200){
             let a = document.createElement('a')
             a.href = res?.data?.data?.selectFile
             a.download = 'picture'
             a.dispatchEvent(new MouseEvent('click'))
+        }else if(res?.data?.code === 403){
+            setModalState('下载')
+            setShowLogin(true)
+            return
         }
     }
     return (
@@ -171,7 +184,7 @@ const Post = ({post,setCurrentId}) => {
                         <img src={postItem.waterImg} style={{width:"280px",height:'630px',objectFit:'cover',borderRadius:"8px 0 0 8px4"}}/>
                     </div>
                     <div style={{width:'620px',display:'flex', justifyContent:'center', alignItems:'center'}}>
-                        <Auth handleClose={handleClose} creator={postItem?.name}/>
+                        <Auth handleClose={handleClose} creator={postItem?.name} modalState={modalState}/>
                     </div>
                 </div>
             </Modal>

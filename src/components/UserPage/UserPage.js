@@ -17,7 +17,7 @@ import {Avatar,Modal,message,  Button, Tabs, Row, Col, Spin, Popconfirm} from 'a
 import './UserPage.css'
 import Post from "../Posts/Post/Post";
 import Masonry from "react-responsive-masonry";
-
+import UserData from '../UserData/UserData'
 
 const UserPage = () => {
     // const user = useSelector((state) => state?.auth?.authData?.result);
@@ -56,7 +56,8 @@ const UserPage = () => {
 
     const downLoadFile = async(postId, userId) => {
         const res = await fetchPostByPostId(postId);
-        downloadCount(userId)
+        const {data} = await downloadCount(userId)
+        dispatch({type:'AUTHUPDATE', data});
         if(res?.data?.code === 200){
             let a = document.createElement('a')
             a.href = res?.data?.data?.selectFile
@@ -66,8 +67,7 @@ const UserPage = () => {
     }
 
     const PostsList = () => {
-        return <div>
-            {!isLoading?<div style={{margin: '10px 70px'}}>
+        return <div style={{margin: '10px 70px'}}>
                     <Row gutter={[24, 12]}>
                         {post.map((item) => {
                                 return <Col span={4} key={item._id}>
@@ -116,7 +116,6 @@ const UserPage = () => {
                             }
                         )}
                     </Row>
-                </div>:<Spin size="large"/>}
                 </div>
     }
 
@@ -187,9 +186,6 @@ const UserPage = () => {
         </div>
     }
 
-    const UserData = () => {
-        
-    }
 
     const items = [
         {
@@ -210,7 +206,7 @@ const UserPage = () => {
         {
             key: '4',
             label: <div className="nodeCenter"><LineChartOutlined />数据</div>,
-            children: `Content of Tab Pane 4`,
+            children: <UserData/>,
         },
     ];
     const { id } = useParams();
@@ -276,14 +272,14 @@ const UserPage = () => {
                     <button className="nodeCenter cancelSubscribe" onClick={handleFollow}><MinusCircleOutlined style={{marginRight:'7px'}}/>取消关注</button>
             }
         </div>
-        {isMine?<Tabs defaultActiveKey="1" items={items} style={{width:'100%',fontSize:'32px'}}/>:!isLoading?<div style={{width:'calc(100% - 160px)',margin:'30px 80px'}}>
+        {isMine?!isLoading?<Tabs defaultActiveKey="1" items={items} style={{width:'100%',fontSize:'32px'}}/>:<div style={{width:'100vh', display:'flex',justifyContent:'center',marginTop:'100px'}}><Spin size='large' tip='加载中'/></div>:!isLoading?<div style={{width:'calc(100% - 160px)',margin:'30px 80px'}}>
             <Masonry columnsCount={3} gutter="20px" className="">
                 {post.map((item) =>
                         <Post post={item} key={item} />
 
                     )}
             </Masonry>
-            </div>:<Spin size='large'/>
+            </div>:<Spin size='large' tip='加载中'/>
         }
     </div>
             
